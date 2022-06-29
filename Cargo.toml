@@ -7,3 +7,5 @@ edition = "2021"
 
 [dependencies]
 colored = "2.0.0"
+chess = "3.2.0"
+chess-engine = "0.1.2"
