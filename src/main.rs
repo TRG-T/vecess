@@ -1,26 +1,31 @@
+use colored::Colorize;
+
 fn main() {
     print_board()
 }
 
 fn print_board() {
+    println!();
     //rows
-    for i in 0..=32 {
+    for i in 0..=8 {
         //cols
-        for j in 0..=32 {
+        for j in 0..=8 {
             pick_char(j, i);
         }
-        print!("\n");
+        println!();
     }
 }
 
 fn pick_char(a: u8, b: u8) {
-    if a % 8 == 0 && b % 4 == 0 {
-        print!("+");
-    } else if a % 4 == 0 {
-        print!("|");
-    } else if b % 4 == 0 {
-        print!("-")
+    if b % 2 == 0 {
+        if a % 2 == 0 {
+            print!("{}", "♟️".on_color("white"));
+        } else {
+            print!("{}", "♟️".on_color("black"));
+        }
+    } else if a % 2 == 0 {
+        print!("{}", "♟️".on_color("black"));
     } else {
-        print!(" ");
+        print!("{}", "♟️".on_color("white"));
     }
 }
