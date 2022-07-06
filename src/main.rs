@@ -142,7 +142,8 @@ fn show_moves(board: &mut [[StyledContent<&str>; 8]; 8], cursor: (usize, usize))
                 change_background_color(&mut board[cursor.0-a][cursor.1], COLORS[3])
             }
         },
-        " ♜ " => {eclipser.0-1][cursor.1].on(COLORS[3]);
+        " ♜ " => {
+            board[cursor.0-1][cursor.1] = board[cursor.0-1][cursor.1].on(COLORS[3]);
         },
         _ => {}
     }
