@@ -188,8 +188,8 @@ fn main() -> Result<(), Error> {
             false => println!("      Black's move\r"),
         }
         if poll(Duration::from_millis(500))? {
-            match read()? {
-                Event::Key(event) => match event.code {
+            if let Event::Key(event) = read()? {
+                match event.code {
                     KeyCode::Char('q') => break,
                     KeyCode::Char('w') => cursor.y = (cursor.y + 7) % 8,
                     KeyCode::Char('s') => cursor.y = (cursor.y + 1) % 8,
@@ -204,9 +204,7 @@ fn main() -> Result<(), Error> {
                         cursor.toggle_move_mode()
                     }
                     _ => {}
-                },
-                Event::Mouse(event) => println!("{:?}", event),
-                Event::Resize(width, height) => println!("New size {}x{}", width, height),
+                }
             }
         }
         thread::sleep(fps(10));
