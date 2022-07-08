@@ -1,5 +1,5 @@
 use crossterm::{
-    cursor::{Hide, MoveTo},
+    cursor::{Hide, MoveTo, CursorShape},
     event::{poll, read, Event, KeyCode},
     execute,
     style::{Color, Stylize, StyledContent},
@@ -32,10 +32,22 @@ impl<'a> Piece<'a> {
     }
 }
 
+struct Cursor<'a> {
+    x: usize,
+    y: usize,
+    moving_piece: Option<Piece<'a>>
+}
+
+impl<'a> Cursor<'a> {
+    pub fn new() -> Cursor<'a> {
+        Cursor { x: 4, y: 7, moving_piece: None }
+    }
+}
+
 fn main() -> Result<(),Error>{
     let mut board: Board = [[Piece::new("  ", Color::Black, Color::Black); 8]; 8];
     let white_move = true;
-    let mut cursor: (usize, usize) = (7, 4);
+    let mut cursor = Cursor::new();
 
     enable_raw_mode()?;
     generate_board(&mut board, "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
@@ -44,22 +56,20 @@ fn main() -> Result<(),Error>{
     loop {
         clear_terminal()?;
         print_board_letters();
-        print_board(board, cursor);
+        print_board(board, &cursor);
         println!();
         match white_move {
             true => println!("       White's move\r"),
             false => println!("      Black's move\r"),
         }
         if poll(Duration::from_millis(500))? {
-            // It's guaranteed that the `read()` won't block when the `poll()`
-            // function returns `true`
             match read()? {
                 Event::Key(event) => match event.code {
                     KeyCode::Char('q') => break,
-                    KeyCode::Char('w') => cursor.0 = (cursor.0+7)%8,
-                    KeyCode::Char('s') => cursor.0 = (cursor.0+1)%8,
-                    KeyCode::Char('a') => cursor.1 = (cursor.1+7)%8,
-                    KeyCode::Char('d') => cursor.1 = (cursor.1+1)%8,
+                    KeyCode::Char('w') => cursor.y = (cursor.y+7)%8,
+                    KeyCode::Char('s') => cursor.y = (cursor.y+1)%8,
+                    KeyCode::Char('a') => cursor.x = (cursor.x+7)%8,
+                    KeyCode::Char('d') => cursor.x = (cursor.x+1)%8,
                     KeyCode::Enter => {
 
                     },
@@ -85,7 +95,7 @@ fn clear_terminal() -> Result<(), Error> {
     Ok(())
 }
 
-fn print_board(board: Board, cursor: (usize, usize)) {
+fn print_board(board: Board, cursor: &Cursor) {
     for row in 0..BOARD_SIZE {
         print!("{} ", 8 - row);
         for col in 0..BOARD_SIZE {
@@ -103,8 +113,8 @@ fn print_board_letters() {
     println!("\r");
 }
 
-fn print_board_pieces(row: usize, col: usize, board: Board, cursor: (usize, usize)) {
-    if cursor == (row, col) {
+fn print_board_pieces(row: usize, col: usize, board: Board, cursor: &Cursor) {
+    if (cursor.y, cursor.x) == (row, col) {
         print!("{}", board[row][col].char.on(COLORS[2]));
         return;
     }
