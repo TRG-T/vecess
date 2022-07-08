@@ -13,7 +13,7 @@ use std::{
 
 const BOARD_SIZE: usize = 8;
 const LETTERS: [char; 8] = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
-const COLORS: [Color; 4] = [Color::DarkBlue, Color::Blue, Color::Green, Color::DarkGrey];
+const COLORS: [Color; 4] = [Color::DarkBlue, Color::Blue, Color::Green, Color::DarkYellow];
 type Board<'a> = [[Piece<'a>;8];8];
 
 fn fps(fps: u64) -> Duration {
@@ -35,12 +35,17 @@ impl<'a> Piece<'a> {
 struct Cursor<'a> {
     x: usize,
     y: usize,
+    move_mode: bool,
     moving_piece: Option<Piece<'a>>
 }
 
 impl<'a> Cursor<'a> {
     pub fn new() -> Cursor<'a> {
-        Cursor { x: 4, y: 7, moving_piece: None }
+        Cursor { x: 4, y: 7, move_mode: false, moving_piece: None }
+    }
+
+    pub fn toggle_move_mode(&mut self) {
+        self.move_mode = !self.move_mode
     }
 }
 
@@ -71,7 +76,7 @@ fn main() -> Result<(),Error>{
                     KeyCode::Char('a') => cursor.x = (cursor.x+7)%8,
                     KeyCode::Char('d') => cursor.x = (cursor.x+1)%8,
                     KeyCode::Enter => {
-
+                        cursor.toggle_move_mode()
                     },
                     _ => {}
                 },
@@ -115,7 +120,11 @@ fn print_board_letters() {
 
 fn print_board_pieces(row: usize, col: usize, board: Board, cursor: &Cursor) {
     if (cursor.y, cursor.x) == (row, col) {
-        print!("{}", board[row][col].char.on(COLORS[2]));
+        if cursor.move_mode {
+            print!("{}", board[row][col].char.on(COLORS[3]));
+        } else {
+            print!("{}", board[row][col].char.on(COLORS[2]));
+        }
         return;
     }
     print!("{}", board[row][col].char);
