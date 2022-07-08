@@ -1,5 +1,5 @@
 use crossterm::{
-    cursor::{Hide, MoveTo, CursorShape},
+    cursor::{Hide, MoveTo},
     event::{poll, read, Event, KeyCode},
     execute,
     style::{Color, Stylize, StyledContent},
@@ -47,6 +47,11 @@ impl<'a> Cursor<'a> {
     pub fn toggle_move_mode(&mut self) {
         self.move_mode = !self.move_mode
     }
+
+    pub fn take_piece(&mut self, board: &mut Board<'a>) {
+        self.moving_piece = Some(board[self.y][self.x]);
+        board[self.y][self.x] = Piece::new("   ", board[self.y][self.x].char.style().foreground_color.unwrap(), board[self.y][self.x].char.style().background_color.unwrap());
+    }
 }
 
 fn main() -> Result<(),Error>{
@@ -76,6 +81,11 @@ fn main() -> Result<(),Error>{
                     KeyCode::Char('a') => cursor.x = (cursor.x+7)%8,
                     KeyCode::Char('d') => cursor.x = (cursor.x+1)%8,
                     KeyCode::Enter => {
+                        if cursor.move_mode {
+                            make_move(&mut cursor, &mut board)
+                        } else {
+                            cursor.take_piece(&mut board)
+                        }
                         cursor.toggle_move_mode()
                     },
                     _ => {}
@@ -165,6 +175,12 @@ fn generate_board(board: &mut Board, pieces: &str) {
         }
         col += 1;
     }
+}
+
+fn make_move<'a: 'b, 'b>(cursor: &mut Cursor<'a>, board: &mut Board<'b>) {
+    let color = board[cursor.y][cursor.x].char.style().background_color.unwrap();
+    board[cursor.y][cursor.x] = cursor.moving_piece.unwrap();
+    change_background_color(&mut board[cursor.y][cursor.x].char, color)
 }
 
 fn change_background_color(char: &mut StyledContent<&str>, color: Color) {
