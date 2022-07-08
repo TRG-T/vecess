@@ -38,6 +38,10 @@ impl<'a> Piece<'a> {
             has_moved: false,
         }
     }
+
+    pub fn change_background_color(&mut self, color: Color) {
+        self.char.style_mut().background_color = Some(color);
+    }
 }
 
 struct Cursor<'a> {
@@ -57,24 +61,34 @@ impl<'a> Cursor<'a> {
         }
     }
 
+    pub fn up(&mut self) {
+        self.y = (self.y + 7) % 8;
+    }
+
+    pub fn down(&mut self) {
+        self.y = (self.y + 1) % 8;
+    }
+
+    pub fn right(&mut self) {
+        self.x = (self.x + 1) % 8;
+    }
+
+    pub fn left(&mut self) {
+        self.x = (self.x + 7) % 8;
+    }
+
     pub fn toggle_move_mode(&mut self) {
         self.move_mode = !self.move_mode
     }
 
     pub fn take_piece(&mut self, board: &mut Board<'a>) {
         self.moving_piece = Some(board.fields[self.y][self.x]);
+        // the field from which we take the piece
+        let field_style = board.fields[self.y][self.x].char.style();
         board.fields[self.y][self.x] = Piece::new(
             "   ",
-            board.fields[self.y][self.x]
-                .char
-                .style()
-                .foreground_color
-                .unwrap(),
-            board.fields[self.y][self.x]
-                .char
-                .style()
-                .background_color
-                .unwrap(),
+            field_style.foreground_color.unwrap(),
+            field_style.background_color.unwrap(),
         );
     }
 }
@@ -132,12 +146,13 @@ impl<'a> Board<'a> {
     pub fn print_board(&self, cursor: &Cursor) {
         self.print_board_letters();
         for row in 0..BOARD_SIZE {
-            print!("{} ", 8 - row);
+            print!("{} ", 8 - row); // print board numbers
             for col in 0..BOARD_SIZE {
                 self.print_board_pieces(row, col, cursor);
             }
             println!("\r");
         }
+        println!();
     }
 
     fn print_board_letters(&self) {
@@ -166,8 +181,10 @@ impl<'a> Board<'a> {
             .style()
             .background_color
             .unwrap();
-        self.fields[cursor.y][cursor.x] = cursor.moving_piece.unwrap();
-        change_background_color(&mut self.fields[cursor.y][cursor.x].char, color)
+        let mut moving_piece = cursor.moving_piece.unwrap();
+        moving_piece.has_moved = true;
+        self.fields[cursor.y][cursor.x] = moving_piece;
+        self.fields[cursor.y][cursor.x].change_background_color(color)
     }
 }
 
@@ -177,12 +194,10 @@ fn main() -> Result<(), Error> {
     let mut cursor = Cursor::new();
 
     enable_raw_mode()?;
-    println!();
 
     loop {
         clear_terminal()?;
         board.print_board(&cursor);
-        println!();
         match white_move {
             true => println!("       White's move\r"),
             false => println!("      Black's move\r"),
@@ -191,10 +206,10 @@ fn main() -> Result<(), Error> {
             if let Event::Key(event) = read()? {
                 match event.code {
                     KeyCode::Char('q') => break,
-                    KeyCode::Char('w') => cursor.y = (cursor.y + 7) % 8,
-                    KeyCode::Char('s') => cursor.y = (cursor.y + 1) % 8,
-                    KeyCode::Char('a') => cursor.x = (cursor.x + 7) % 8,
-                    KeyCode::Char('d') => cursor.x = (cursor.x + 1) % 8,
+                    KeyCode::Char('w') => cursor.up(),
+                    KeyCode::Char('s') => cursor.down(),
+                    KeyCode::Char('a') => cursor.left(),
+                    KeyCode::Char('d') => cursor.right(),
                     KeyCode::Enter => {
                         if cursor.move_mode {
                             board.make_move(&mut cursor)
@@ -221,8 +236,4 @@ fn clear_terminal() -> Result<(), Error> {
         MoveTo(0, 1),
     )?;
     Ok(())
-}
-
-fn change_background_color(char: &mut StyledContent<&str>, color: Color) {
-    char.style_mut().background_color = Some(color);
 }
