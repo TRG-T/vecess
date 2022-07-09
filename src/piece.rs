@@ -31,4 +31,9 @@ impl<'a> Piece<'a> {
     pub fn change_background_color(&mut self, color: Color) {
         self.char.style_mut().background_color = Some(color);
     }
+
+    pub fn change_char(&mut self, char: &'a str) {
+        let style = self.char.style();
+        self.char = char.with(style.foreground_color.unwrap()).on(style.background_color.unwrap());
+    }
 }

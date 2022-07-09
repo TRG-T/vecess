@@ -2,11 +2,11 @@ use crossterm::{
     cursor::{Hide, MoveTo},
     event::{poll, read, Event, KeyCode},
     execute,
-    terminal::{enable_raw_mode, Clear, ClearType, EnterAlternateScreen},
+    terminal::{enable_raw_mode, Clear, ClearType},
 };
 use std::{
     io::{stdout, Error},
-    thread,
+    thread::{sleep},
     time::Duration,
 };
 
@@ -54,7 +54,7 @@ fn main() -> Result<(), Error> {
                 }
             }
         }
-        thread::sleep(fps(10));
+        sleep(fps(10));
     }
     Ok(())
 }
