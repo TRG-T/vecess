@@ -23,7 +23,7 @@ impl<'a> Board<'a> {
     }
 
     fn generate_board(pieces: &str) -> Fields<'a> {
-        let mut fields: Fields = [[Piece::new("  ", Color::Black, Color::Black, Type::Blank); 8]; 8];
+        let mut fields: Fields = [[Piece::new("  ", Color::Black, Type::Blank); 8]; 8];
         let mut row: usize = 0;
         let mut col: usize = 0;
         for c in pieces.chars() {
@@ -32,27 +32,25 @@ impl<'a> Board<'a> {
                 col = 0;
                 continue;
             }
-            let mut color = COLORS[(row + col) % 2];
             match c {
                 // black pieces
-                'r' => fields[row][col] = Piece::new(" ♜ ", Color::Black, color, Type::Rook),
-                'n' => fields[row][col] = Piece::new(" ♞ ", Color::Black, color, Type::Knight),
-                'b' => fields[row][col] = Piece::new(" ♝ ", Color::Black, color, Type::Bishop),
-                'q' => fields[row][col] = Piece::new(" ♛ ", Color::Black, color, Type::King),
-                'k' => fields[row][col] = Piece::new(" ♚ ", Color::Black, color, Type::Queen),
-                'p' => fields[row][col] = Piece::new(" ♟ ", Color::Black, color, Type::Pawn),
+                'r' => fields[row][col] = Piece::new(" ♜ ", Color::Black, Type::Rook),
+                'n' => fields[row][col] = Piece::new(" ♞ ", Color::Black, Type::Knight),
+                'b' => fields[row][col] = Piece::new(" ♝ ", Color::Black, Type::Bishop),
+                'q' => fields[row][col] = Piece::new(" ♛ ", Color::Black, Type::King),
+                'k' => fields[row][col] = Piece::new(" ♚ ", Color::Black, Type::Queen),
+                'p' => fields[row][col] = Piece::new(" ♟ ", Color::Black, Type::Pawn),
 
                 // white pieces
-                'R' => fields[row][col] = Piece::new(" ♜ ", Color::White, color, Type::Rook),
-                'N' => fields[row][col] = Piece::new(" ♞ ", Color::White, color, Type::Knight),
-                'B' => fields[row][col] = Piece::new(" ♝ ", Color::White, color, Type::Bishop),
-                'Q' => fields[row][col] = Piece::new(" ♛ ", Color::White, color,  Type::King),
-                'K' => fields[row][col] = Piece::new(" ♚ ", Color::White, color, Type::Queen),
-                'P' => fields[row][col] = Piece::new(" ♟ ", Color::White, color, Type::Pawn),
+                'R' => fields[row][col] = Piece::new(" ♜ ", Color::White, Type::Rook),
+                'N' => fields[row][col] = Piece::new(" ♞ ", Color::White, Type::Knight),
+                'B' => fields[row][col] = Piece::new(" ♝ ", Color::White, Type::Bishop),
+                'Q' => fields[row][col] = Piece::new(" ♛ ", Color::White,  Type::King),
+                'K' => fields[row][col] = Piece::new(" ♚ ", Color::White, Type::Queen),
+                'P' => fields[row][col] = Piece::new(" ♟ ", Color::White, Type::Pawn),
                 '8' => {
                     for a in 0..8 {
-                        color = COLORS[(row + a) % 2];
-                        fields[row][a] = Piece::new("   ", Color::White, color, Type::Blank);
+                        fields[row][a] = Piece::new("   ", Color::White, Type::Blank);
                     }
                 }
                 _ => {}
@@ -83,6 +81,7 @@ impl<'a> Board<'a> {
     }
 
     fn print_board_pieces(&self, row: usize, col: usize, cursor: &Cursor) {
+        let color = COLORS[(row + col) % 2];
         if (cursor.y, cursor.x) == (row, col) {
             if cursor.move_mode {
                 print!("{}", self.fields[row][col].char.on(COLORS[3]));
@@ -91,18 +90,12 @@ impl<'a> Board<'a> {
             }
             return;
         }
-        print!("{}", self.fields[row][col].char);
+        print!("{}", self.fields[row][col].char.on(color));
     }
 
     pub fn make_move(&mut self, cursor: &mut Cursor<'a>) {
-        let color = self.fields[cursor.y][cursor.x]
-            .char
-            .style()
-            .background_color
-            .unwrap();
         let mut moving_piece = cursor.moving_piece.unwrap();
         moving_piece.has_moved = true;
         self.fields[cursor.y][cursor.x] = moving_piece;
-        self.fields[cursor.y][cursor.x].change_background_color(color)
     }
 }

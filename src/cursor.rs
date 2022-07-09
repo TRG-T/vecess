@@ -40,7 +40,7 @@ impl<'a> Cursor<'a> {
 
     pub fn take_piece(&mut self, board: &mut Board<'a>) {
         self.moving_piece = Some(board.fields[self.y][self.x]);
-        board.fields[self.y][self.x].change_char("   ");
-        board.fields[self.y][self.x].piece_type = Type::Blank
+        board.fields[self.y][self.x].set_char("   ");
+        board.fields[self.y][self.x].set_type(Type::Blank);
     }
 }

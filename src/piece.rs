@@ -20,20 +20,19 @@ pub struct Piece<'a> {
 }
 
 impl<'a> Piece<'a> {
-    pub fn new(char: &'a str, fg_color: Color, bg_color: Color, piece_type: Type) -> Piece<'a> {
+    pub fn new(char: &'a str, color: Color, piece_type: Type) -> Piece<'a> {
         Piece {
-            char: char.with(fg_color).on(bg_color),
+            char: char.with(color),
             has_moved: false,
             piece_type
         }
     }
 
-    pub fn change_background_color(&mut self, color: Color) {
-        self.char.style_mut().background_color = Some(color);
+    pub fn set_char(&mut self, char: &'a str) {
+        self.char = char.with(self.char.style().foreground_color.unwrap());
     }
 
-    pub fn change_char(&mut self, char: &'a str) {
-        let style = self.char.style();
-        self.char = char.with(style.foreground_color.unwrap()).on(style.background_color.unwrap());
+    pub fn set_type(&mut self, piece_type: Type) {
+        self.piece_type = piece_type;
     }
 }
