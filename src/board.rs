@@ -1,4 +1,4 @@
-use crate::piece::Piece;
+use crate::piece::{Piece, Type};
 use crate::cursor::Cursor;
 use crossterm::style::{Color, Stylize};
 
@@ -23,7 +23,7 @@ impl<'a> Board<'a> {
     }
 
     fn generate_board(pieces: &str) -> Fields<'a> {
-        let mut fields: Fields = [[Piece::new("  ", Color::Black, Color::Black); 8]; 8];
+        let mut fields: Fields = [[Piece::new("  ", Color::Black, Color::Black, Type::Blank); 8]; 8];
         let mut row: usize = 0;
         let mut col: usize = 0;
         for c in pieces.chars() {
@@ -35,23 +35,24 @@ impl<'a> Board<'a> {
             let mut color = COLORS[(row + col) % 2];
             match c {
                 // black pieces
-                'r' => fields[row][col] = Piece::new(" ♜ ", Color::Black, color),
-                'n' => fields[row][col] = Piece::new(" ♞ ", Color::Black, color),
-                'b' => fields[row][col] = Piece::new(" ♝ ", Color::Black, color),
-                'q' => fields[row][col] = Piece::new(" ♛ ", Color::Black, color),
-                'k' => fields[row][col] = Piece::new(" ♚ ", Color::Black, color),
-                'p' => fields[row][col] = Piece::new(" ♟ ", Color::Black, color),
+                'r' => fields[row][col] = Piece::new(" ♜ ", Color::Black, color, Type::Rook),
+                'n' => fields[row][col] = Piece::new(" ♞ ", Color::Black, color, Type::Knight),
+                'b' => fields[row][col] = Piece::new(" ♝ ", Color::Black, color, Type::Bishop),
+                'q' => fields[row][col] = Piece::new(" ♛ ", Color::Black, color, Type::King),
+                'k' => fields[row][col] = Piece::new(" ♚ ", Color::Black, color, Type::Queen),
+                'p' => fields[row][col] = Piece::new(" ♟ ", Color::Black, color, Type::Pawn),
+
                 // white pieces
-                'R' => fields[row][col] = Piece::new(" ♜ ", Color::White, color),
-                'N' => fields[row][col] = Piece::new(" ♞ ", Color::White, color),
-                'B' => fields[row][col] = Piece::new(" ♝ ", Color::White, color),
-                'Q' => fields[row][col] = Piece::new(" ♛ ", Color::White, color),
-                'K' => fields[row][col] = Piece::new(" ♚ ", Color::White, color),
-                'P' => fields[row][col] = Piece::new(" ♟ ", Color::White, color),
+                'R' => fields[row][col] = Piece::new(" ♜ ", Color::White, color, Type::Rook),
+                'N' => fields[row][col] = Piece::new(" ♞ ", Color::White, color, Type::Knight),
+                'B' => fields[row][col] = Piece::new(" ♝ ", Color::White, color, Type::Bishop),
+                'Q' => fields[row][col] = Piece::new(" ♛ ", Color::White, color,  Type::King),
+                'K' => fields[row][col] = Piece::new(" ♚ ", Color::White, color, Type::Queen),
+                'P' => fields[row][col] = Piece::new(" ♟ ", Color::White, color, Type::Pawn),
                 '8' => {
                     for a in 0..8 {
                         color = COLORS[(row + a) % 2];
-                        fields[row][a] = Piece::new("   ", Color::White, color);
+                        fields[row][a] = Piece::new("   ", Color::White, color, Type::Blank);
                     }
                 }
                 _ => {}

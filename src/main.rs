@@ -62,7 +62,6 @@ fn main() -> Result<(), Error> {
 fn clear_terminal() -> Result<(), Error> {
     execute!(
         stdout(),
-        EnterAlternateScreen,
         Clear(ClearType::All),
         Hide,
         MoveTo(0, 1),

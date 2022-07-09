@@ -1,5 +1,5 @@
 use crate::board::Board;
-use crate::piece::Piece;
+use crate::piece::{Piece, Type};
 
 pub struct Cursor<'a> {
     pub x: usize,
@@ -46,6 +46,7 @@ impl<'a> Cursor<'a> {
             "   ",
             field_style.foreground_color.unwrap(),
             field_style.background_color.unwrap(),
+            Type::Blank
         );
     }
 }
