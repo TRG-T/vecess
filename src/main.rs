@@ -1,6 +1,7 @@
 use crossterm::{
     cursor::{Hide, MoveTo},
     event::{poll, read, Event, KeyCode},
+    style::{Stylize},
     execute,
     terminal::{enable_raw_mode, Clear, ClearType},
 };
@@ -22,7 +23,7 @@ fn fps(fps: u64) -> Duration {
 
 fn main() -> Result<(), Error> {
     let mut board = Board::new();
-    let white_move = true;
+    let mut white_move = true;
     let mut cursor = Cursor::new();
 
     enable_raw_mode()?;
@@ -31,8 +32,8 @@ fn main() -> Result<(), Error> {
         clear_terminal()?;
         board.print_board(&cursor);
         match white_move {
-            true => println!("       White's move\r"),
-            false => println!("      Black's move\r"),
+            true => println!("  {}\r", "      White's move      ".black().on_white().bold()),
+            false => println!("  {}\r", "      Black's move      ".black().on_white().bold()),
         }
         if poll(Duration::from_millis(500))? {
             if let Event::Key(event) = read()? {
@@ -44,7 +45,8 @@ fn main() -> Result<(), Error> {
                     KeyCode::Char('d') => cursor.right(),
                     KeyCode::Enter => {
                         if cursor.move_mode {
-                            board.make_move(&mut cursor)
+                            board.make_move(&mut cursor);
+                            white_move = !white_move;
                         } else {
                             cursor.take_piece(&mut board)
                         }
