@@ -107,5 +107,6 @@ impl<'a> Board<'a> {
         let mut moving_piece = cursor.moving_piece.unwrap();
         moving_piece.has_moved = true;
         self.fields[cursor.pos.y][cursor.pos.x] = moving_piece;
+        cursor.toggle_move_mode();
     }
 }

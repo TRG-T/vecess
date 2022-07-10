@@ -54,9 +54,8 @@ fn main() -> Result<(), Error> {
                             board.make_move(&mut cursor);
                             white_move = !white_move;
                         } else {
-                            cursor.take_piece(&mut board)
+                            cursor.take_piece(&mut board, white_move)
                         }
-                        cursor.toggle_move_mode()
                     },
                     KeyCode::Esc => {
                         if cursor.move_mode {
