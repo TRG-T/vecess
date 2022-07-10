@@ -1,8 +1,9 @@
 use crossterm::style::{Color, StyledContent, Stylize};
 
-#[derive(Clone, Copy, Default)]
+use crate::{Pos, board::Board};
+
+#[derive(Clone, Copy, PartialEq)]
 pub enum Type {
-    #[default]
     Pawn,
     Knight,
     Bishop,
@@ -35,4 +36,27 @@ impl<'a> Piece<'a> {
     pub fn set_type(&mut self, piece_type: Type) {
         self.piece_type = piece_type;
     }
+
+    pub fn get_piece_moves(&self, pos: &Pos, board: &mut Board) -> [[bool; 8]; 8] {
+        let mut possible_moves = [[false;8];8];
+        match self.piece_type {
+            Type::Pawn => {
+                if board.fields[pos.y-1][pos.x].piece_type == Type::Blank {
+                    possible_moves[pos.y-1][pos.x] = true;
+                    if !self.has_moved && board.fields[pos.y-2][pos.x].piece_type == Type::Blank {
+                        possible_moves[pos.y-2][pos.x] = true;
+                    }
+                }
+                if pos.x < 7 && board.fields[pos.y-1][pos.x+1].piece_type != Type::Blank {
+                    possible_moves[pos.y-1][pos.x+1] = true;
+                }
+                if pos.x <= 7 && pos.x > 0 && board.fields[pos.y-1][pos.x-1].piece_type != Type::Blank {
+                    possible_moves[pos.y-1][pos.x-1] = true;
+                }
+            },
+            Type::Rook => {},
+            _ => {}
+        }
+        possible_moves
+    } 
 }

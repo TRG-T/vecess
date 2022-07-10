@@ -9,6 +9,7 @@ pub struct Cursor<'a> {
     pub move_mode: bool,
     pub moving_piece: Option<Piece<'a>>,
     pub old_piece_pos: Option<Pos>,
+    pub possible_moves: Option<[[bool; 8]; 8]>,
 }
 
 impl<'a> Cursor<'a> {
@@ -17,7 +18,8 @@ impl<'a> Cursor<'a> {
             pos: Pos { x: 4, y: 7 },
             move_mode: false,
             moving_piece: None,
-            old_piece_pos: None
+            old_piece_pos: None,
+            possible_moves: None,
         }
     }
 
@@ -42,10 +44,11 @@ impl<'a> Cursor<'a> {
     }
 
     pub fn take_piece(&mut self, board: &mut Board<'a>, white_move: bool) {
-        if board.get_field(&self.pos).char.style().foreground_color.unwrap() == Color::Black || !white_move {
-            return;
-        }
+        // if !white_move {
+        //     return;
+        // }
         self.moving_piece = Some(board.get_field(&self.pos));
+        self.possible_moves = Some(self.moving_piece.unwrap().get_piece_moves(&self.pos, board));
         self.old_piece_pos = Some(Pos { x: self.pos.x, y: self.pos.y });
         board.get_mut_field(&self.pos).set_char("   ");
         board.get_mut_field(&self.pos).set_type(Type::Blank);
@@ -56,6 +59,7 @@ impl<'a> Cursor<'a> {
         let old_field = board.get_mut_field(self.old_piece_pos.as_ref().unwrap());
         old_field.set_char(self.moving_piece.unwrap().char.content());
         old_field.set_type(self.moving_piece.unwrap().piece_type);
+        self.possible_moves = None;
         self.moving_piece = None;
     }
 }

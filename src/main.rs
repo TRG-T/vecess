@@ -29,7 +29,7 @@ pub struct Pos {
 
 fn main() -> Result<(), Error> {
     let mut board = Board::new();
-    let mut white_move = true;
+    let white_move = true;
     let mut cursor = Cursor::new();
 
     enable_raw_mode()?;
@@ -51,8 +51,7 @@ fn main() -> Result<(), Error> {
                     KeyCode::Char('d') => cursor.right(),
                     KeyCode::Enter => {
                         if cursor.move_mode {
-                            board.make_move(&mut cursor);
-                            white_move = !white_move;
+                            board.make_move(&mut cursor, white_move);
                         } else {
                             cursor.take_piece(&mut board, white_move)
                         }

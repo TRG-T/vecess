@@ -100,13 +100,27 @@ impl<'a> Board<'a> {
             }
             return;
         }
+        let possible_moves = cursor.possible_moves.as_ref();
+        if let Some(arr) = possible_moves {
+            if arr[pos.y][pos.x] {
+                print!("{}", self.get_field(&pos).char.on(Color::Grey));
+                return;
+            }
+        }
         print!("{}", self.get_field(&pos).char.on(color));
     }
 
-    pub fn make_move(&mut self, cursor: &mut Cursor<'a>) {
+    pub fn make_move(&mut self, cursor: &mut Cursor<'a>, mut white_move: bool) {
         let mut moving_piece = cursor.moving_piece.unwrap();
+        if !cursor.possible_moves.unwrap()[cursor.pos.y][cursor.pos.x] {
+            cursor.undo_take_piece(self);
+            cursor.toggle_move_mode();
+            return;
+        }
         moving_piece.has_moved = true;
         self.fields[cursor.pos.y][cursor.pos.x] = moving_piece;
         cursor.toggle_move_mode();
+        cursor.possible_moves = None;
+        white_move = !white_move;
     }
 }
