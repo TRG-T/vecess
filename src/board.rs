@@ -106,6 +106,6 @@ impl<'a> Board<'a> {
     pub fn make_move(&mut self, cursor: &mut Cursor<'a>) {
         let mut moving_piece = cursor.moving_piece.unwrap();
         moving_piece.has_moved = true;
-        self.get_field(&cursor.pos) = moving_piece;
+        self.fields[cursor.pos.y][cursor.pos.x] = moving_piece;
     }
 }
