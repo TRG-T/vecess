@@ -21,6 +21,12 @@ fn fps(fps: u64) -> Duration {
     Duration::from_millis(1000 / fps)
 }
 
+#[derive(PartialEq)]
+pub struct Pos {
+    x: usize,
+    y: usize,
+}
+
 fn main() -> Result<(), Error> {
     let mut board = Board::new();
     let mut white_move = true;
