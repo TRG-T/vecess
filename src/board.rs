@@ -94,7 +94,7 @@ impl<'a> Board<'a> {
         let color = COLORS[(pos.x + pos.y) % 2];
         if cursor.pos == pos {
             if cursor.move_mode {
-                print!("{}", self.get_field(&pos).char.on(COLORS[3]));
+                print!("{}", cursor.moving_piece.unwrap().char.on(COLORS[3]));
             } else {
                 print!("{}", self.get_field(&pos).char.on(COLORS[2]));
             }
