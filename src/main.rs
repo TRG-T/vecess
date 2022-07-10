@@ -57,6 +57,12 @@ fn main() -> Result<(), Error> {
                             cursor.take_piece(&mut board)
                         }
                         cursor.toggle_move_mode()
+                    },
+                    KeyCode::Esc => {
+                        if cursor.move_mode {
+                            cursor.undo_take_piece(&mut board);
+                            cursor.toggle_move_mode();
+                        }
                     }
                     _ => {}
                 }
