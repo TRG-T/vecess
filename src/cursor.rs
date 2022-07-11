@@ -7,7 +7,6 @@ pub struct Cursor<'a> {
     pub move_mode: bool,
     pub moving_piece: Option<Piece<'a>>,
     pub old_piece_pos: Option<Pos>,
-    pub possible_moves: Option<[[bool; 8]; 8]>,
 }
 
 impl<'a> Cursor<'a> {
@@ -17,7 +16,6 @@ impl<'a> Cursor<'a> {
             move_mode: false,
             moving_piece: None,
             old_piece_pos: None,
-            possible_moves: None,
         }
     }
 
@@ -46,19 +44,32 @@ impl<'a> Cursor<'a> {
         //     return;
         // }
         self.moving_piece = Some(board.get_field(&self.pos));
-        self.possible_moves = Some(self.moving_piece.unwrap().get_piece_moves(&self.pos, board));
+        board.possible_moves = Some(self.moving_piece.unwrap().get_piece_moves(&self.pos, board));
         self.old_piece_pos = Some(Pos { x: self.pos.x, y: self.pos.y });
-        let old_field = board.get_mut_field(&self.pos);
-        old_field.set_char("   ");
-        old_field.set_type(Type::Blank);
+        board.get_mut_field(&self.pos).set_blank();
         self.toggle_move_mode();
     }
 
     pub fn undo_take_piece(&mut self, board: &mut Board<'a>) {
         let old_field = board.get_mut_field(self.old_piece_pos.as_ref().unwrap());
-        old_field.set_char(self.moving_piece.unwrap().char.content());
-        old_field.set_type(self.moving_piece.unwrap().piece_type);
-        self.possible_moves = None;
+        let moving_piece = self.moving_piece.unwrap();
+        old_field.set_char(moving_piece.char.content());
+        old_field.set_type(moving_piece.piece_type);
+        board.possible_moves = None;
         self.moving_piece = None;
+    }
+
+    pub fn make_move(&mut self, board: &mut Board<'a>, mut white_move: bool) {
+        if !board.possible_moves.unwrap()[self.pos.y][self.pos.x] {
+            self.undo_take_piece(board);
+            self.toggle_move_mode();
+            return;
+        }
+        let mut moving_piece = self.moving_piece.unwrap();
+        moving_piece.has_moved = true;
+        board.fields[self.pos.y][self.pos.x] = moving_piece;
+        self.toggle_move_mode();
+        board.possible_moves = None;
+        white_move = !white_move;
     }
 }

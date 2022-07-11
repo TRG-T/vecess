@@ -37,6 +37,11 @@ impl<'a> Piece<'a> {
         self.piece_type = piece_type;
     }
 
+    pub fn set_blank(&mut self) {
+        self.char = "   ".white();
+        self.piece_type = Type::Blank;
+    }
+
     pub fn get_piece_moves(&self, pos: &Pos, board: &mut Board) -> [[bool; 8]; 8] {
         let mut possible_moves = [[false;8];8];
         match self.piece_type {
@@ -54,7 +59,36 @@ impl<'a> Piece<'a> {
                     possible_moves[pos.y-1][pos.x-1] = true;
                 }
             },
-            Type::Rook => {},
+            Type::Rook => {
+                for a in (0..pos.y).rev() {
+                    if board.fields[a][pos.x].piece_type == Type::Blank {
+                        possible_moves[a][pos.x] = true;
+                    } else {
+                        break;
+                    }
+                }
+                for a in pos.y+1..8 {
+                    if board.fields[a][pos.x].piece_type == Type::Blank {
+                        possible_moves[a][pos.x] = true;
+                    } else {
+                        break;
+                    }
+                }
+                for a in (0..pos.x).rev() {
+                    if board.fields[pos.y][a].piece_type == Type::Blank {
+                        possible_moves[pos.y][a] = true;
+                    } else {
+                        break;
+                    }
+                }
+                for a in pos.x+1..8 {
+                    if board.fields[pos.y][a].piece_type == Type::Blank {
+                        possible_moves[pos.y][a] = true;
+                    } else {
+                        break;
+                    }
+                }
+            },
             _ => {}
         }
         possible_moves

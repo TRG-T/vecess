@@ -51,7 +51,7 @@ impl<'a> Game<'a> {
                         KeyCode::Char('d') => self.cursor.right(),
                         KeyCode::Enter => {
                             if self.cursor.move_mode {
-                                self.board.make_move(&mut self.cursor, self.white_move);
+                                self.cursor.make_move(&mut self.board, self.white_move);
                             } else {
                                 self.cursor.take_piece(&mut self.board, self.white_move)
                             }

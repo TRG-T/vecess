@@ -14,12 +14,14 @@ const BOARD_SIZE: usize = 8;
 type Fields<'a> = [[Piece<'a>; 8]; 8];
 pub struct Board<'a> {
     pub fields: Fields<'a>,
+    pub possible_moves: Option<[[bool; 8]; 8]>,
 }
 
 impl<'a> Board<'a> {
     pub fn new() -> Board<'a> {
         Board {
             fields: Self::generate_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR"),
+            possible_moves: None,
         }
     }
 
@@ -100,27 +102,12 @@ impl<'a> Board<'a> {
             }
             return;
         }
-        let possible_moves = cursor.possible_moves.as_ref();
-        if let Some(arr) = possible_moves {
+        if let Some(arr) = self.possible_moves {
             if arr[pos.y][pos.x] {
                 print!("{}", self.get_field(&pos).char.on(Color::Grey));
                 return;
             }
         }
         print!("{}", self.get_field(&pos).char.on(color));
-    }
-
-    pub fn make_move(&mut self, cursor: &mut Cursor<'a>, mut white_move: bool) {
-        let mut moving_piece = cursor.moving_piece.unwrap();
-        if !cursor.possible_moves.unwrap()[cursor.pos.y][cursor.pos.x] {
-            cursor.undo_take_piece(self);
-            cursor.toggle_move_mode();
-            return;
-        }
-        moving_piece.has_moved = true;
-        self.fields[cursor.pos.y][cursor.pos.x] = moving_piece;
-        cursor.toggle_move_mode();
-        cursor.possible_moves = None;
-        white_move = !white_move;
     }
 }
