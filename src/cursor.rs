@@ -1,5 +1,3 @@
-use crossterm::style::Color;
-
 use crate::Pos;
 use crate::board::Board;
 use crate::piece::{Piece, Type};
@@ -50,8 +48,9 @@ impl<'a> Cursor<'a> {
         self.moving_piece = Some(board.get_field(&self.pos));
         self.possible_moves = Some(self.moving_piece.unwrap().get_piece_moves(&self.pos, board));
         self.old_piece_pos = Some(Pos { x: self.pos.x, y: self.pos.y });
-        board.get_mut_field(&self.pos).set_char("   ");
-        board.get_mut_field(&self.pos).set_type(Type::Blank);
+        let old_field = board.get_mut_field(&self.pos);
+        old_field.set_char("   ");
+        old_field.set_type(Type::Blank);
         self.toggle_move_mode();
     }
 
