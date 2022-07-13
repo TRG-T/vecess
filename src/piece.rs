@@ -1,5 +1,5 @@
+use std::fmt;
 use crossterm::style::{Color, StyledContent, Stylize};
-
 use crate::{Pos, board::Board};
 
 #[derive(Clone, Copy, PartialEq)]
@@ -13,33 +13,38 @@ pub enum Type {
     Blank
 }
 
-#[derive(Clone, Copy)]
-pub struct Piece<'a> {
-    pub char: StyledContent<&'a str>,
-    pub has_moved: bool,
-    pub piece_type: Type
+impl Type {
+    pub fn as_str(&self) -> &str {
+        match self {
+            Type::Pawn => " ♟ ",
+            Type::Knight => " ♞ ",
+            Type::Bishop => " ♝ ",
+            Type::Rook => " ♜ ",
+            Type::Queen => " ♚ ",
+            Type::King => " ♛ ",
+            Type::Blank => "   "
+        }
+    }
 }
 
-impl<'a> Piece<'a> {
-    pub fn new(char: &'a str, color: Color, piece_type: Type) -> Piece<'a> {
+#[derive(Clone, Copy)]
+pub struct Piece {
+    pub color: Color,
+    pub piece_type: Type,
+    pub has_moved: bool,
+}
+
+impl Piece {
+    pub fn new(color: Color, piece_type: Type) -> Piece {
         Piece {
-            char: char.with(color),
+            color,
             has_moved: false,
             piece_type
         }
     }
 
-    pub fn set_char(&mut self, char: &'a str) {
-        self.char = char.with(self.char.style().foreground_color.unwrap());
-    }
-
     pub fn set_type(&mut self, piece_type: Type) {
         self.piece_type = piece_type;
-    }
-
-    pub fn set_blank(&mut self) {
-        self.char = "   ".white();
-        self.piece_type = Type::Blank;
     }
 
     pub fn get_piece_moves(&self, pos: &Pos, board: &mut Board) -> [[bool; 8]; 8] {

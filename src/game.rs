@@ -12,14 +12,14 @@ use std::{
     time::Duration,
 };
 
-pub struct Game<'a> {
-    board: Board<'a>,
-    cursor: Cursor<'a>,
+pub struct Game {
+    board: Board,
+    cursor: Cursor,
     white_move: bool,
 }
 
-impl<'a> Game<'a> {
-    pub fn new() -> Game<'a> {
+impl Game {
+    pub fn new() -> Game {
         Game {
             board: Board::new(),
             cursor: Cursor::new(),
