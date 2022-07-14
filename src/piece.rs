@@ -1,6 +1,6 @@
-use std::fmt;
-use crossterm::style::{Color, StyledContent, Stylize};
-use crate::{Pos, board::Board};
+use crossterm::style::{Color};
+use crate::board::Board;
+use crate::pos::Pos;
 
 #[derive(Clone, Copy, PartialEq)]
 pub enum Type {

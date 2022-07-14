@@ -1,4 +1,4 @@
-use crate::Pos;
+use crate::pos::Pos;
 use crate::piece::{Piece, Type};
 use crate::cursor::Cursor;
 use crossterm::style::{Color, Stylize};
@@ -76,7 +76,7 @@ impl Board {
         for row in 0..BOARD_SIZE {
             print!("{} ", 8 - row); // print board numbers
             for col in 0..BOARD_SIZE {
-                self.print_board_pieces(Pos { x: col, y: row }, cursor);
+                self.print_board_fields(Pos::new(row, col), cursor);
             }
             print!("          info");
             println!("\r");
@@ -92,7 +92,7 @@ impl Board {
         println!("\r");
     }
 
-    fn print_board_pieces(&self, pos: Pos, cursor: &Cursor) {
+    fn print_board_fields(&self, pos: Pos, cursor: &Cursor) {
         let color = COLORS[(pos.x + pos.y) % 2];
         let field = self.get_field(&pos);
         if cursor.pos == pos {

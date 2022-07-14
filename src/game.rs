@@ -15,7 +15,6 @@ use std::{
 pub struct Game {
     board: Board,
     cursor: Cursor,
-    white_move: bool,
 }
 
 impl Game {
@@ -23,7 +22,6 @@ impl Game {
         Game {
             board: Board::new(),
             cursor: Cursor::new(),
-            white_move: true,
         }
     }
 
@@ -31,7 +29,7 @@ impl Game {
         loop {
             self.clear_terminal()?;
             self.board.print_board(&self.cursor);
-            match self.white_move {
+            match self.cursor.white_move {
                 true => println!(
                     "  {}\r",
                     "      White's move      ".black().on_white().bold()
@@ -51,9 +49,9 @@ impl Game {
                         KeyCode::Char('d') => self.cursor.right(),
                         KeyCode::Enter => {
                             if self.cursor.move_mode {
-                                self.cursor.make_move(&mut self.board, self.white_move);
+                                self.cursor.make_move(&mut self.board);
                             } else {
-                                self.cursor.take_piece(&mut self.board, self.white_move)
+                                self.cursor.take_piece(&mut self.board)
                             }
                         }
                         KeyCode::Esc => {

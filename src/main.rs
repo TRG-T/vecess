@@ -6,12 +6,7 @@ mod board;
 mod cursor;
 mod game;
 mod piece;
-
-#[derive(PartialEq)]
-pub struct Pos {
-    x: usize,
-    y: usize,
-}
+mod pos;
 
 fn main() -> Result<(), Error> {
     let mut game = Game::new();
